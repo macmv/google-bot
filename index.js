@@ -20,7 +20,13 @@ function search_image(term, msg) {
     request({
       uri: 'https://duckduckgo.com/i.js?o=json&q=' + term + '&vqd=' + vqd
     }, function(error, response, body) {
-      var data = JSON.parse(body);
+      try {
+        var data = JSON.parse(body);
+      } catch {
+        console.log("Could not parse json from i.js:\n" + body)
+        msg.channel.send("Error loading your image!");
+        return
+      }
       if (data.results.length > 0) {
         var image = data.results[0].image;
         const embed = new Discord.MessageEmbed().setImage(image);
