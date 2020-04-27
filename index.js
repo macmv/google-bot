@@ -6,6 +6,7 @@ const config = require('./config.json');
 const bot = new Discord.Client();
 
 function search_image(term, msg) {
+  console.log("Searching for " + term);
   request({
     uri: 'http://duckduckgo.com/?q=' + term + '&iax=images&ia=images'
   }, function(error, response, body) {
@@ -15,7 +16,10 @@ function search_image(term, msg) {
       uri: 'https://duckduckgo.com/i.js?o=json&q=' + term + '&vqd=' + vqd
     }, function(error, response, body) {
       var data = JSON.parse(body);
-      msg.channel.send(data.results[0].image);
+      var image = data.results[0].image;
+      const embed = new Discord.MessageEmbed()
+        .setImage(image);
+      msg.channel.send(embed);
     });
   });
 }
