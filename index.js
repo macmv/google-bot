@@ -1,7 +1,6 @@
 
 const Discord = require('discord.js');
-const request = require("request");
-const fs = require('fs');
+const request = require('request');
 const config = require('./config.json');
 const bot = new Discord.Client();
 
@@ -11,6 +10,11 @@ function search_image(term, msg) {
     uri: 'http://duckduckgo.com/?q=' + term + '&iax=images&ia=images'
   }, function(error, response, body) {
     var start = body.search("vqd");
+    if (start == -1) {
+      console.log("Could not find vqd!");
+      msg.channel.send("Error loading your image!");
+      return;
+    }
     var vqd = body.substring(start + 5, start + 86);
     request({
       uri: 'https://duckduckgo.com/i.js?o=json&q=' + term + '&vqd=' + vqd
@@ -32,6 +36,10 @@ bot.on('message', msg => {
   if (msg.content[0] == config.prefix) {
     args = msg.content.substring(1).split(" ");
     if (args[0] == "image") {
+      if (args.length == 1) {
+        msg.channel.send("Please add a search term!");
+        return;
+      }
       args.splice(0, 1);
       search_image(args.join(" "), msg);
     }
