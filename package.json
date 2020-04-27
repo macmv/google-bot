@@ -1,0 +1,11 @@
+{
+  "name": "google",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "author": "Neil Macneale",
+  "license": "MIT",
+  "dependencies": {
+    "discord.js": "12.2.0"
+  }
+}
