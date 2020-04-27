@@ -5,9 +5,10 @@ const config = require('./config.json');
 const bot = new Discord.Client();
 
 function search_image(term, msg) {
-  console.log("Searching for " + term);
+  var encoded_term = encodeURIComponent(term);
+  console.log("Searching for " + encoded_term);
   request({
-    uri: 'http://duckduckgo.com/?q=' + term + '&iax=images&ia=images'
+    uri: 'http://duckduckgo.com/?q=' + encoded_term + '&iax=images&ia=images'
   }, function(error, response, body) {
     var start = body.search("vqd");
     if (start == -1) {
@@ -20,10 +21,13 @@ function search_image(term, msg) {
       uri: 'https://duckduckgo.com/i.js?o=json&q=' + term + '&vqd=' + vqd
     }, function(error, response, body) {
       var data = JSON.parse(body);
-      var image = data.results[0].image;
-      const embed = new Discord.MessageEmbed()
-        .setImage(image);
-      msg.channel.send(embed);
+      if (data.results.length > 0) {
+        var image = data.results[0].image;
+        const embed = new Discord.MessageEmbed().setImage(image);
+        msg.channel.send(embed);
+      } else {
+        msg.channel.send("No results found!");
+      }
     });
   });
 }
