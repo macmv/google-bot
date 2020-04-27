@@ -32,7 +32,8 @@ bot.on('message', msg => {
   if (msg.content[0] == config.prefix) {
     args = msg.content.substring(1).split(" ");
     if (args[0] == "image") {
-      search_image(args[1], msg);
+      args.splice(0, 1);
+      search_image(args.join(" "), msg);
     }
   }
 });
