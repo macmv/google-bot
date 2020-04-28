@@ -40,6 +40,22 @@ function search_image(term, msg) {
   });
 }
 
+async function run_eval(text, msg) {
+  try {
+    text = text.replace(/"/g, '\\"');
+    const { stdout, stderr } = await exec("node -e \"" + text + "\"");
+    output = stdout.trim();
+    if (output == '' || output == undefined) {
+      msg.channel.send("Your command generated no output!");
+    } else {
+      msg.channel.send(output);
+    }
+  } catch (err) {
+    console.error(err);
+    msg.channel.send("There was an error while running your command!");
+  };
+}
+
 bot.on('ready', () => {
   console.info(`Logged in as ${bot.user.tag}!`);
 });
