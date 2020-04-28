@@ -1,10 +1,12 @@
 
 const Discord = require('discord.js');
 const request = require('request');
+const util = require('util');
+const exec = util.promisify(require('child_process').exec);
 const config = require('./config.json');
 const bot = new Discord.Client();
 
-function search_image(term, msg, full) {
+function search_image(term, msg) {
   var encoded_term = encodeURIComponent(term);
   console.log("Searching for " + encoded_term);
   request({
@@ -29,13 +31,8 @@ function search_image(term, msg, full) {
       }
       if (data.results.length > 0) {
         var image;
-        if (full) {
-          image = data.results[0].image;
-        } else {
-          image = data.results[0].thumbnail;
-        }
-        const embed = new Discord.MessageEmbed().setImage(image);
-        msg.channel.send(embed);
+        image = data.results[0].image;
+        msg.channel.send({files: [image]});
       } else {
         msg.channel.send("No results found!");
       }
@@ -50,20 +47,17 @@ bot.on('ready', () => {
 bot.on('message', msg => {
   if (msg.content[0] == config.prefix) {
     args = msg.content.substring(1).split(" ");
-    if (args[0] == "image") {
+    func = args[0];
+    args.splice(0, 1);
+    if (func == "image") {
       if (args.length == 1) {
         msg.channel.send("Please add a search term!");
         return;
       }
-      args.splice(0, 1);
-      search_image(args.join(" "), msg, false);
-    } else if (args[0] == "imagef") {
-      if (args.length == 1) {
-        msg.channel.send("Please add a search term!");
-        return;
-      }
-      args.splice(0, 1);
-      search_image(args.join(" "), msg, true);
+      search_image(args.join(" "), msg);
+    } else if (func == "eval") {
+      text = args.join(" ");
+      run_eval(text, msg);
     }
   }
 });
